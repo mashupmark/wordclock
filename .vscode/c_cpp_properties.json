@@ -1,0 +1,68 @@
+{
+    "env": {},
+    "configurations": [
+        {
+            "name": "Esp8266",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/workspaces/wordclock/**",
+                "${SMING_HOME}/Components",
+                "${SMING_HOME}/System/include",
+                "${SMING_HOME}/Wiring",
+                "${SMING_HOME}/Core",
+                "${SMING_HOME}",
+                "${SMING_HOME}/Components/Storage/src/include",
+                "${SMING_HOME}/Arch/Esp8266",
+                "${SMING_HOME}/Arch/Esp8266/Core",
+                "${SMING_HOME}/Arch/Esp8266/Components",
+                "${SMING_HOME}/Arch/Esp8266/Components/libc/include",
+                "${SMING_HOME}/Components/rboot/rboot",
+                "${SMING_HOME}/Components/rboot/rboot/appcode",
+                "${SMING_HOME}/Components/rboot/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp8266/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp8266",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp-lwip/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp-lwip",
+                "${SMING_HOME}/Arch/Esp8266/Components/driver/include",
+                "${SMING_HOME}/Components/arch_driver/src/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/gdbstub",
+                "${SMING_HOME}/Arch/Esp8266/Components/driver",
+                "${ESP_HOME}/xtensa-lx106-elf/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/spi_flash/include",
+                "${SMING_HOME}/Components/FlashString/src/include",
+                "${SMING_HOME}/Libraries/Spiffs/src/include",
+                "${SMING_HOME}/Components/IFS/src/include",
+                "${SMING_HOME}/Libraries/SPI/src",
+                "${SMING_HOME}/Libraries/SPI/src/Arch/Esp8266"
+            ],
+            "defines": [
+                "ARCH_ESP8266=1"
+            ],
+            "compilerPath": "${env:ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x86",
+            "compilerArgs": [
+                "-DCOM_SPEED_SERIAL=115200",
+                "-DSERIAL_BAUD_RATE=115200",
+                "-DGDBSTUB_GDB_PATCHED=0",
+                "-DSMING_ARCH=Esp8266",
+                "-DSMING_SOC=esp8266",
+                "-DPROJECT_DIR=\\\"/workspaces/wordclock\\\"",
+                "-DSMING_HOME=\\\"/opt/sming/Sming\\\"",
+                "-D${SMING_SOC_VAR}=1",
+                "-DDISABLE_NETWORK=1",
+                "-DDISABLE_WIFI=1",
+                "-DDEBUG_PRINT_FILENAME_AND_LINE=0",
+                "-DCUST_FILE_BASE=${subst",
+                "/opt/sming/Sming/,,$<}",
+                "-DDEBUG_VERBOSE_LEVEL=2",
+                "-DSTRING_OBJECT_SIZE=12",
+                "-DUSE_US_TIMER"
+            ]
+        }
+    ],
+    "version": 4
+}
