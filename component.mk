@@ -6,7 +6,7 @@
 # COMPONENT_SOC :=
 
 ## If project doesn't require networking, saves RAM and build time
-DISABLE_NETWORK := 1
+# DISABLE_NETWORK := 1
 
 ## Add your source directories here separated by space
 # COMPONENT_SRCDIRS := app
@@ -14,7 +14,7 @@ DISABLE_NETWORK := 1
 # COMPONENT_INCDIRS := include
 
 ## If you require any Libraries list them here
-# ARDUINO_LIBRARIES :=
+ARDUINO_LIBRARIES := ArduinoJson6
 
 ## List the names of any additional Components required for this project
 # COMPONENT_DEPENDS :=
@@ -37,9 +37,9 @@ DISABLE_NETWORK := 1
 
 ## Configure hardware
 # Default is 'standard' (no spiffs), can also provide your own
-#HWCONFIG := spiffs
+HWCONFIG := spiffs-2m
 
 ## Select source of content for default `spiffs` partition when built
-# SPIFF_FILES = files
+SPIFF_FILES = web/build
 
 ## Refer to Basic_rBoot sample for options relating to rBoot
