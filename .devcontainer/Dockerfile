@@ -4,7 +4,8 @@ RUN apt-get -y update \
     && DEBIAN_FRONTEND=noninteractive \
     TZ=Europe/Berlin \
     apt-get install -y \
-    python3.10-venv
+    python3.10-venv \
+    avr-libc
 
 ARG SMING_REPO=https://github.com/SmingHub/Sming
 ARG SMING_BRANCH=master

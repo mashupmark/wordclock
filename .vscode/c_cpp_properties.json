@@ -7,6 +7,7 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
+                "/usr/lib/**",
                 "/workspaces/wordclock/**",
                 "${SMING_HOME}/Components",
                 "${SMING_HOME}/System/include",
@@ -23,19 +24,24 @@
                 "${SMING_HOME}/Components/rboot/include",
                 "${SMING_HOME}/Arch/Esp8266/Components/esp8266/include",
                 "${SMING_HOME}/Arch/Esp8266/Components/esp8266",
-                "${SMING_HOME}/Arch/Esp8266/Components/esp-lwip/include",
-                "${SMING_HOME}/Arch/Esp8266/Components/esp-lwip",
                 "${SMING_HOME}/Arch/Esp8266/Components/driver/include",
                 "${SMING_HOME}/Components/arch_driver/src/include",
                 "${SMING_HOME}/Arch/Esp8266/Components/gdbstub",
                 "${SMING_HOME}/Arch/Esp8266/Components/driver",
                 "${ESP_HOME}/xtensa-lx106-elf/include",
                 "${SMING_HOME}/Arch/Esp8266/Components/spi_flash/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp_wifi/include",
                 "${SMING_HOME}/Components/FlashString/src/include",
                 "${SMING_HOME}/Libraries/Spiffs/src/include",
                 "${SMING_HOME}/Components/IFS/src/include",
                 "${SMING_HOME}/Libraries/SPI/src",
-                "${SMING_HOME}/Libraries/SPI/src/Arch/Esp8266"
+                "${SMING_HOME}/Libraries/SPI/src/Arch/Esp8266",
+                "${SMING_HOME}/Components/Network/src",
+                "${SMING_HOME}/Components/ssl/include",
+                "${SMING_HOME}/Components/crypto/include",
+                "${SMING_HOME}/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip/include",
+                "${SMING_HOME}/Libraries/ArduinoJson6/include",
+                "${SMING_HOME}/Libraries/ArduinoJson6/ArduinoJson/src"
             ],
             "defines": [
                 "ARCH_ESP8266=1"
@@ -53,14 +59,14 @@
                 "-DPROJECT_DIR=\\\"/workspaces/wordclock\\\"",
                 "-DSMING_HOME=\\\"/opt/sming/Sming\\\"",
                 "-D${SMING_SOC_VAR}=1",
-                "-DDISABLE_NETWORK=1",
-                "-DDISABLE_WIFI=1",
                 "-DDEBUG_PRINT_FILENAME_AND_LINE=0",
                 "-DCUST_FILE_BASE=${subst",
                 "/opt/sming/Sming/,,$<}",
                 "-DDEBUG_VERBOSE_LEVEL=2",
                 "-DSTRING_OBJECT_SIZE=12",
-                "-DUSE_US_TIMER"
+                "-DUSE_US_TIMER",
+                "-DHTTP_SERVER_EXPOSE_NAME=1",
+                "-DHTTP_SERVER_EXPOSE_VERSION=0"
             ]
         }
     ],
