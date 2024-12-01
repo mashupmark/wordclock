@@ -1,7 +1,6 @@
 #include <SmingCore.h>
 #include <JsonObjectStream.h>
 
-// If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
@@ -60,7 +59,7 @@ namespace
 		startWebServer();
 	}
 
-} // namespace
+}
 
 void init()
 {
