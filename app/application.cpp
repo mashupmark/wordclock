@@ -1,6 +1,7 @@
 #include <SmingCore.h>
 #include <JsonObjectStream.h>
 
+// Default WiFi credentials, please provide the actual ones via the CLI when building the final binary e.g.: `make WIFI_SSID=test WIFI_PWD=1234`
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
