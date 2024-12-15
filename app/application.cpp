@@ -1,13 +1,32 @@
 #include <SmingCore.h>
 #include <JsonObjectStream.h>
+#include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 
 // Default WiFi credentials, please provide the actual ones via the CLI when building the final binary e.g.: `make WIFI_SSID=test WIFI_PWD=1234`
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
+#define WIFI_SSID "PleaseEnterSSID"
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
 HttpServer server;
+
+#define LED_PIN 12
+#define NUM_LEDS 110
+Adafruit_NeoPixel ledStrip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+Timer ledTimer;
+
+uint8_t currentLedIndex = 0;
+void shiftLed()
+{
+	ledStrip.clear();
+
+	ledStrip.setPixelColor(currentLedIndex, 0x00ff00);
+	currentLedIndex++;
+	if (currentLedIndex >= NUM_LEDS)
+		currentLedIndex = 0;
+
+	ledStrip.show();
+}
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
@@ -71,4 +90,7 @@ void init()
 
 	// Run our method when station was connected to AP
 	WifiEvents.onStationGotIP(gotIP);
+
+	ledStrip.begin();
+	ledTimer.initializeMs(500, shiftLed).start();
 }

@@ -14,7 +14,7 @@
 # COMPONENT_INCDIRS := include
 
 ## If you require any Libraries list them here
-ARDUINO_LIBRARIES := ArduinoJson6
+ARDUINO_LIBRARIES := ArduinoJson6 Adafruit_NeoPixel
 
 ## List the names of any additional Components required for this project
 # COMPONENT_DEPENDS :=
