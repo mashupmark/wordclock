@@ -12,10 +12,10 @@ There is currently an issue with forwarding devices to containers in Docker Desk
 
 First start the esptool server on your device:
 ```bash
-esp:rfc2217_server -v -p4000 /dev/cu.usbserial-120
+esp_rfc2217_server.py -v -p 4000 /dev/cu.usbserial-120
 ```
 
 Then initiate the flashing process from the dev container:
 ```bash
-make flash COM_PORT=rfc2217://host.docker.nternal:4000?ign_set_control
+make flash COM_PORT=rfc2217://host.docker.internal:4000?ign_set_control
 ```
