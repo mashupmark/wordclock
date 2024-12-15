@@ -7,59 +7,55 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-namespace
+HttpServer server;
+
+void onIndex(HttpRequest &request, HttpResponse &response)
 {
-	HttpServer server;
+	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
+}
 
-	void onIndex(HttpRequest &request, HttpResponse &response)
+void onFile(HttpRequest &request, HttpResponse &response)
+{
+	String file = request.uri.getRelativePath();
+
+	if (file[0] == '.')
+		response.code = HTTP_STATUS_FORBIDDEN;
+	else
 	{
-		TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-		response.sendNamedStream(tmpl); // this template object will be deleted automatically
+		response.setCache(86400, true); // It's important to use cache for better performance.
+		response.sendFile(file);
 	}
+}
 
-	void onFile(HttpRequest &request, HttpResponse &response)
-	{
-		String file = request.uri.getRelativePath();
+void onPing(HttpRequest &request, HttpResponse &response)
+{
+	JsonObjectStream *stream = new JsonObjectStream();
+	JsonObject json = stream->getRoot();
 
-		if (file[0] == '.')
-			response.code = HTTP_STATUS_FORBIDDEN;
-		else
-		{
-			response.setCache(86400, true); // It's important to use cache for better performance.
-			response.sendFile(file);
-		}
-	}
+	JsonObject data = json.createNestedObject("data");
+	data[F("message")] = F("pong");
 
-	void onPing(HttpRequest &request, HttpResponse &response)
-	{
-		JsonObjectStream *stream = new JsonObjectStream();
-		JsonObject json = stream->getRoot();
+	response.sendDataStream(stream, MIME_JSON);
+}
 
-		JsonObject data = json.createNestedObject("data");
-		data[F("message")] = F("pong");
+void startWebServer()
+{
+	server.listen(80);
+	server.paths.set("/", onIndex);
+	server.paths.set("/api/ping", onPing);
+	server.paths.setDefault(onFile);
 
-		response.sendDataStream(stream, MIME_JSON);
-	}
+	Serial << endl
+		   << _F("=== WEB SERVER STARTED ===") << endl
+		   << WifiStation.getIP() << endl
+		   << _F("==========================") << endl
+		   << endl;
+}
 
-	void startWebServer()
-	{
-		server.listen(80);
-		server.paths.set("/", onIndex);
-		server.paths.set("/api/ping", onPing);
-		server.paths.setDefault(onFile);
-
-		Serial << endl
-			   << _F("=== WEB SERVER STARTED ===") << endl
-			   << WifiStation.getIP() << endl
-			   << _F("==========================") << endl
-			   << endl;
-	}
-
-	void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
-	{
-		startWebServer();
-	}
-
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
+{
+	startWebServer();
 }
 
 void init()
