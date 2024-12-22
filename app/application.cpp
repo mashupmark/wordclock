@@ -8,24 +8,145 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+NtpClient ntpClient("pool.ntp.org", 60 * 60 * 1000); // Update system clock every hour
 HttpServer server;
 
 #define LED_PIN 12
 #define NUM_LEDS 110
 Adafruit_NeoPixel ledStrip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
-Timer ledTimer;
 
-uint8_t currentLedIndex = 0;
-void shiftLed()
+/*
+	05 -> Fünf nach {hour}
+	10 -> Zehn nach {hour}
+	15 -> Viertel {hour+1}
+	20 -> Zehn vor halb {hour+1}
+	25 -> Fünf vor halb {hour+1}
+	30 -> Halb {hour+1}
+	35 -> Fünf nach halb {hour+1}
+	40 -> Zehn nach halb {hour+1}
+	45 -> Viertel vor {hour+1}
+	50 -> Zehn vor {hour+1}
+	55 -> Fünf vor {hour+1}
+ */
+void displayTime(DateTime dt, uint32_t color)
 {
 	ledStrip.clear();
 
-	ledStrip.setPixelColor(currentLedIndex, 0x00ff00);
-	currentLedIndex++;
-	if (currentLedIndex >= NUM_LEDS)
-		currentLedIndex = 0;
+	ledStrip.fill(color, 0, 2); // "Es"
+	ledStrip.fill(color, 3, 3); // "Ist"
+
+	auto minute = (dt.Minute / 5) * 5; // round down to the next multiple of 5
+	auto hour = dt.Hour;
+
+	switch (minute)
+	{
+	// "Fünf"
+	case 5:
+	case 25:
+	case 35:
+	case 55:
+		ledStrip.fill(color, 7, 4);
+		break;
+	// "Zehn"
+	case 10:
+	case 20:
+	case 40:
+	case 50:
+		ledStrip.fill(color, 11, 4);
+		break;
+	// "Viertel"
+	case 15:
+	case 45:
+		ledStrip.fill(color, 25, 7);
+		break;
+	}
+
+	switch (minute)
+	{
+	// "Nach"
+	case 5:
+	case 10:
+	case 35:
+	case 40:
+		ledStrip.fill(color, 18, 4);
+		break;
+	// "Vor"
+	case 20:
+	case 25:
+	case 45:
+	case 50:
+	case 55:
+		ledStrip.fill(color, 34, 3);
+		break;
+	}
+
+	// "Halb"
+	if (minute >= 20 && minute < 45)
+	{
+		ledStrip.fill(color, 40, 4);
+	}
+
+	// Unless the time is shown as "nach {hour}" it should be relative to the next full hour e.g. "viertel eins"
+	if (minute > 10)
+		hour += 1;
+
+	switch (hour % 12)
+	{
+	case 0: // "Zwölf"
+		ledStrip.fill(color, 94, 5);
+		break;
+	case 1:
+		ledStrip.fill(color, 55, 4);
+		break;
+	case 2:
+		ledStrip.fill(color, 62, 4);
+		break;
+	case 3:
+		ledStrip.fill(color, 66, 4);
+		break;
+	case 4:
+		ledStrip.fill(color, 73, 4);
+		break;
+	case 5:
+		ledStrip.fill(color, 51, 4);
+		break;
+	case 6:
+		ledStrip.fill(color, 77, 4);
+		break;
+	case 7:
+		ledStrip.fill(color, 88, 6);
+		break;
+	case 8:
+		ledStrip.fill(color, 84, 4);
+		break;
+	case 9:
+		ledStrip.fill(color, 44, 4);
+		break;
+	case 10:
+		ledStrip.fill(color, 99, 4);
+		break;
+	case 11:
+		ledStrip.fill(color, 103, 3);
+		break;
+	}
+
+	// "Uhr"
+	if (minute == 0)
+	{
+		ledStrip.fill(color, 107, 3);
+	}
 
 	ledStrip.show();
+}
+
+Timer clockTimer;
+void clockTimerCallback()
+{
+	auto dt = DateTime(SystemClock.now());
+	if (dt.Minute % 5 != 0 && dt.Second < 1) // Save some performance as this only needs to run for the first second of every 5th minute
+		return;
+
+	displayTime(dt, 0xff0000);
 }
 
 void onIndex(HttpRequest &request, HttpResponse &response)
@@ -92,5 +213,8 @@ void init()
 	WifiEvents.onStationGotIP(gotIP);
 
 	ledStrip.begin();
-	ledTimer.initializeMs(500, shiftLed).start();
+	ledStrip.clear();
+
+	SystemClock.setTimeZone(1); // ToDo: Use dynamic timezone instead of hardcoded offset
+	clockTimer.initializeMs(1000, clockTimerCallback).start();
 }
