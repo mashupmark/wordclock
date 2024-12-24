@@ -215,6 +215,6 @@ void init()
 	ledStrip.begin();
 	ledStrip.clear();
 
-	SystemClock.setTimeZone(1); // ToDo: Use dynamic timezone instead of hardcoded offset
+	SystemClock.setTimeZone(1); // ToDo: Use dynamic timezone instead of hardcoded offset (see: https://github.com/SmingHub/Sming/blob/5.2.0/samples/SystemClock_NTP/app/NtpClientDemo.cpp)
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
 }
