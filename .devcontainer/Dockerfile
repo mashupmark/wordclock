@@ -8,7 +8,7 @@ RUN apt-get -y update \
     avr-libc
 
 ARG SMING_REPO=https://github.com/SmingHub/Sming
-ARG SMING_BRANCH=5.2.0
+ARG SMING_BRANCH=6.0.0
 ARG INSTALL_ARGS=all
 
 RUN git clone $SMING_REPO -b $SMING_BRANCH /opt/sming
