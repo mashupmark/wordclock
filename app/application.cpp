@@ -151,21 +151,15 @@ void clockTimerCallback()
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
-	TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-	response.sendNamedStream(tmpl); // this template object will be deleted automatically
+	response.sendFile("index.html", false);
 }
 
 void onFile(HttpRequest &request, HttpResponse &response)
 {
 	String file = request.uri.getRelativePath();
 
-	if (file[0] == '.')
-		response.code = HTTP_STATUS_FORBIDDEN;
-	else
-	{
-		response.setCache(86400, true); // It's important to use cache for better performance.
-		response.sendFile(file);
-	}
+	response.setCache(86400, true);
+	response.sendFile(file, false);
 }
 
 void onPing(HttpRequest &request, HttpResponse &response)
@@ -198,12 +192,34 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	startWebServer();
 }
 
+bool mountFileSystem()
+{
+	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
+	auto fs = IFS::createFirmwareFilesystem(part);
+	if (fs == nullptr)
+	{
+		debugf("Failed to create filesystem");
+		return false;
+	}
+
+	int res = fs->mount();
+	if (res != FS_OK)
+	{
+		debugf("Failed to mount file system %s", fs->getErrorString(res).c_str());
+		delete fs;
+		return false;
+	}
+
+	fileSetFileSystem(fs);
+	return true;
+}
+
 void init()
 {
-	spiffs_mount(); // Mount file system, in order to work with files
-
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
+
+	mountFileSystem();
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

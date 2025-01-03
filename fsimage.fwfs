@@ -1,0 +1,12 @@
+{
+    "name": "IFS for the wordclock frontend",
+    "source": {
+        "/": "web/build"
+    },
+    "rules": [
+        {
+            "mask": "*",
+            "readonly": true
+        }
+    ]
+}

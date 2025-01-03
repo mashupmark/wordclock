@@ -19,3 +19,12 @@ Then initiate the flashing process from the dev container:
 ```bash
 make flash COM_PORT=rfc2217://host.docker.internal:4000?ign_set_control
 ```
+
+### Building the file system image with the frontend
+
+The IFS (Inmemory File System) will automatically be built when running `make` for the first time.
+However, this is only the case if the image isn't cached already. Sming can't track changes to its underlying files so in order for changes to the frontend to be reflected in the firmware flashed to the device you need to run:
+
+```bash
+make buildpart
+```

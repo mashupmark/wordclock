@@ -1,0 +1,17 @@
+{
+    "name": "wordclock-ifs",
+    "base_config": "standard-4m",
+    "partitions": {
+        "fwfs0": {
+            "address": "0x000fa000",
+            "size": "3M",
+            "type": "data",
+            "subtype": "fwfs",
+            "filename": "out/fwfs0.bin",
+            "build": {
+                "target": "fwfs-build",
+                "config": "fsimage.fwfs"
+            }
+        }
+    }
+}

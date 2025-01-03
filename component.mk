@@ -37,9 +37,9 @@ ARDUINO_LIBRARIES := ArduinoJson6 Adafruit_NeoPixel
 
 ## Configure hardware
 # Default is 'standard' (no spiffs), can also provide your own
-HWCONFIG := spiffs-2m
+HWCONFIG := hwconfig
 
 ## Select source of content for default `spiffs` partition when built
-SPIFF_FILES = web/build
+# SPIFF_FILES = web/build
 
 ## Refer to Basic_rBoot sample for options relating to rBoot
