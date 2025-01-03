@@ -2,12 +2,6 @@
 #include <JsonObjectStream.h>
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 
-// Default WiFi credentials, please provide the actual ones via the CLI when building the final binary e.g.: `make WIFI_SSID=test WIFI_PWD=1234`
-#ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID"
-#define WIFI_PWD "PleaseEnterPass"
-#endif
-
 NtpClient ntpClient("pool.ntp.org", 60 * 60 * 1000); // Update system clock every hour
 HttpServer server;
 
@@ -162,34 +156,48 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	response.sendFile(file, false);
 }
 
-void onPing(HttpRequest &request, HttpResponse &response)
+void onUpdateWifi(HttpRequest &request, HttpResponse &response)
 {
-	JsonObjectStream *stream = new JsonObjectStream();
-	JsonObject json = stream->getRoot();
+	debugf("Trying to update wifi config");
 
-	JsonObject data = json.createNestedObject("data");
-	data[F("message")] = F("pong");
+	if (request.method != HTTP_POST || request.getBodyStream() == nullptr)
+	{
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
 
-	response.sendDataStream(stream, MIME_JSON);
+	StaticJsonDocument<256> config;
+	if (!Json::deserialize(config, request.getBodyStream()))
+	{
+		debugf("Received invalid json while trying to update wifi config");
+		return;
+	}
+
+	if (!config.containsKey("SSID") || !config.containsKey("PW"))
+		return;
+
+	String ssid = String(config["SSID"]);
+	String password = String(config["PW"]);
+
+	debugf("Updating wifi config to ssid %s", ssid);
+
+	WifiStation.config(ssid, password);
+	WifiStation.connect();
 }
 
 void startWebServer()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
-	server.paths.set("/api/ping", onPing);
+	server.paths.set("/api/wifi", onUpdateWifi);
 	server.paths.setDefault(onFile);
+	server.setBodyParser(MIME_JSON, bodyToStringParser);
 
 	Serial << endl
 		   << _F("=== WEB SERVER STARTED ===") << endl
 		   << WifiStation.getIP() << endl
 		   << _F("==========================") << endl
 		   << endl;
-}
-
-void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
-{
-	startWebServer();
 }
 
 bool mountFileSystem()
@@ -214,6 +222,24 @@ bool mountFileSystem()
 	return true;
 }
 
+void onWifiConnect(IpAddress ip, IpAddress netmask, IpAddress gateway)
+{
+	if (WifiAccessPoint.isEnabled())
+	{
+		debugf("Shutting down own Wifi AP");
+		WifiAccessPoint.enable(false);
+	}
+}
+
+void onWifiDisconnect(const String &ssid, MacAddress mac, WifiDisconnectReason reason)
+{
+	if (!WifiAccessPoint.isEnabled())
+	{
+		debugf("Starting own Wifi AP");
+		WifiAccessPoint.enable(true);
+	}
+}
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
@@ -222,14 +248,14 @@ void init()
 	mountFileSystem();
 
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiAccessPoint.enable(false);
-
-	// Run our method when station was connected to AP
-	WifiEvents.onStationGotIP(gotIP);
+	WifiAccessPoint.config("Wordclock", "", WifiAuthMode::AUTH_OPEN);
+	WifiEvents.onStationGotIP(onWifiConnect);
+	WifiEvents.onStationDisconnect(onWifiDisconnect);
 
 	ledStrip.begin();
 	ledStrip.clear();
+
+	System.onReady(startWebServer);
 
 	SystemClock.setTimeZone(1); // ToDo: Use dynamic timezone instead of hardcoded offset (see: https://github.com/SmingHub/Sming/blob/5.2.0/samples/SystemClock_NTP/app/NtpClientDemo.cpp)
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
