@@ -224,6 +224,8 @@ bool mountFileSystem()
 
 void onWifiConnect(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
+	ntpClient.setAutoQuery(true);
+
 	if (WifiAccessPoint.isEnabled())
 	{
 		debugf("Shutting down own Wifi AP");
@@ -233,6 +235,8 @@ void onWifiConnect(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 void onWifiDisconnect(const String &ssid, MacAddress mac, WifiDisconnectReason reason)
 {
+	ntpClient.setAutoQuery(true);
+
 	if (!WifiAccessPoint.isEnabled())
 	{
 		debugf("Starting own Wifi AP");
@@ -245,6 +249,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
+	ntpClient.setAutoQuery(false);
 	mountFileSystem();
 
 	WifiStation.enable(true);
