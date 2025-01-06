@@ -15,3 +15,4 @@ RUN git clone $SMING_REPO -b $SMING_BRANCH /opt/sming
 
 RUN /opt/sming/Tools/install.sh ${INSTALL_ARGS}
 RUN echo ". /opt/sming/Tools/export.sh" >> ~/.bashrc
+RUN echo "pnpm config set store-dir ~/.pnpm-store" >> ~/.bashrc

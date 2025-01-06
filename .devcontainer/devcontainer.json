@@ -15,15 +15,22 @@
 		},
 		"ghcr.io/devcontainers/features/git:1": {
 			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "22",
+			"pnpmVersion": "9.15.3"
 		}
 	},
 	// Run make initially to build all dependencies for intellisense to work
-	"postCreateCommand": "make",
+	"postCreateCommand": "pnpm i && pnpm -r build && make",
 	"remoteUser": "root",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"Vue.volar",
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint"
 			]
 		}
 	}

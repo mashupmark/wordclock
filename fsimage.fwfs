@@ -1,7 +1,7 @@
 {
     "name": "IFS for the wordclock frontend",
     "source": {
-        "/": "web/build"
+        "/": "web/.output/public"
     },
     "rules": [
         {
