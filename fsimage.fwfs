@@ -6,7 +6,8 @@
     "rules": [
         {
             "mask": "*",
-            "readonly": true
+            "readonly": true,
+            "compress": "gzip"
         }
     ]
 }
