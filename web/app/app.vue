@@ -1,5 +1,14 @@
+<script lang="ts" setup>
+import { NConfigProvider, NGlobalStyle, NMessageProvider } from "naive-ui";
+</script>
+
 <template>
-  <div>
-    <NuxtWelcome />
-  </div>
+  <NConfigProvider inline-theme-disabled preflight-style-disabled>
+    <NMessageProvider closable>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </NMessageProvider>
+    <NGlobalStyle />
+  </NConfigProvider>
 </template>
