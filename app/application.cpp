@@ -189,7 +189,7 @@ void startWebServer()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
-	server.paths.set("/api/wifi", onUpdateWifi);
+	server.paths.set("/api/settings/wifi", onUpdateWifi);
 	server.paths.setDefault(onFile);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
 

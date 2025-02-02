@@ -7,15 +7,15 @@ const toast = useToast();
 
 const schema = v.object({
   SSID: v.pipe(v.string(), v.trim(), v.nonEmpty("required")),
-  PW: v.optional(v.pipe(v.string(), v.trim())),
+  PW: v.pipe(v.string(), v.trim(), v.nonEmpty("required")),
 });
 type Schema = v.InferOutput<typeof schema>;
 
-const state = reactive<Schema>({ SSID: "" });
+const state = reactive<Schema>({ SSID: "", PW: "" });
 
 const onSubmit = async (data: FormSubmitEvent<Schema>) => {
   try {
-    await $fetch("/api/wifi", { method: "PUT", body: data });
+    await $fetch("/api/settings/wifi", { method: "PUT", body: data });
   } catch {
     toast.add({
       title: "Error",
@@ -37,7 +37,7 @@ const onSubmit = async (data: FormSubmitEvent<Schema>) => {
     <UFormGroup label="SSID" name="SSID" required>
       <UInput v-model="state.SSID" />
     </UFormGroup>
-    <UFormGroup label="Password" name="PW">
+    <UFormGroup label="Password" name="PW" required>
       <UInput
         v-model="state.PW"
         type="password"
