@@ -13,8 +13,10 @@ type Schema = v.InferOutput<typeof schema>;
 
 const state = reactive<Schema>({ SSID: "", PW: "" });
 
+const isSaving = ref(false);
 const onSubmit = async (data: FormSubmitEvent<Schema>) => {
   try {
+    isSaving.value = true;
     await $fetch("/api/settings/wifi", { method: "PUT", body: data });
   } catch {
     toast.add({
@@ -22,6 +24,8 @@ const onSubmit = async (data: FormSubmitEvent<Schema>) => {
       description: "Failed to update wifi credentials",
       color: "red",
     });
+  } finally {
+    isSaving.value = false;
   }
 };
 </script>
@@ -32,6 +36,7 @@ const onSubmit = async (data: FormSubmitEvent<Schema>) => {
     description="Update the wifi credentials used to connect to the internet"
     :schema
     :state
+    :isSaving
     @submit="onSubmit"
   >
     <UFormGroup label="SSID" name="SSID" required>

@@ -7,6 +7,7 @@ const props = defineProps<{
   description?: string;
   state: InferOutput<TSchema>;
   schema: TSchema;
+  isSaving?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -28,7 +29,12 @@ const emit = defineEmits<{
       class="pb-2 flex justify-between"
       :ui="{ label: { base: 'font-semibold' } }"
     >
-      <UButton label="Save changes" type="submit" color="black" />
+      <UButton
+        label="Save changes"
+        type="submit"
+        color="black"
+        :loading="props.isSaving"
+      />
     </UFormGroup>
 
     <slot />
