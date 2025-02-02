@@ -1,3 +1,4 @@
 <template>
+  <ColorForm />
   <WifiForm />
 </template>
