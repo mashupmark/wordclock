@@ -11,10 +11,9 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@vicons/ionicons5": "^0.13.0",
-    "naive-ui": "^2.41.0",
+    "@nuxt/ui": "2.21.0",
     "nuxt": "^3.15.1",
-    "nuxtjs-naive-ui": "1.0.2",
+    "valibot": "1.0.0-beta.14",
     "vue": "^3.5.3"
   },
   "devDependencies": {

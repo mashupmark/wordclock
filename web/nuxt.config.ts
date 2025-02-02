@@ -6,5 +6,5 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ["nuxtjs-naive-ui"],
+  modules: ["@nuxt/ui"],
 });
