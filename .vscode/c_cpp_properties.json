@@ -41,7 +41,11 @@
                 "${SMING_HOME}/Components/crypto/include",
                 "${SMING_HOME}/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip/include",
                 "${SMING_HOME}/Libraries/ArduinoJson6/include",
-                "${SMING_HOME}/Libraries/ArduinoJson6/ArduinoJson/src"
+                "${SMING_HOME}/Libraries/ArduinoJson6/ArduinoJson/src",
+                "${SMING_HOME}/Libraries/ConfigDB/src/include",
+                "${SMING_HOME}/Libraries/Timezone/src/include",
+                "${workspaceFolder}/out/ConfigDB",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "ARCH_ESP8266=1"

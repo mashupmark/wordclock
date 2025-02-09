@@ -1,8 +1,14 @@
 #include <SmingCore.h>
 #include <JsonObjectStream.h>
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
+#include <config.h>
+#include <ConfigDB/Json/Format.h>
+#include <TimeKeeper.h>
 
-NtpClient ntpClient("pool.ntp.org", 60 * 60 * 1000); // Update system clock every hour
+Config database("wordclock");
+Config::Root::Settings settings(database);
+
+TimeKeeper timeKeeper("pool.ntp.org", 60 * 60 * 1000);
 HttpServer server;
 
 #define LED_PIN 12
@@ -143,6 +149,45 @@ void clockTimerCallback()
 	displayTime(dt, 0xff0000);
 }
 
+void onSettings(HttpRequest &request, HttpResponse &response)
+{
+	if (request.method != HTTP_GET)
+	{
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
+
+	auto stream = settings.createExportStream(ConfigDB::Json::format);
+	response.sendDataStream(stream.release(), MIME_JSON);
+}
+
+void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
+{
+	auto updater = settings.update();
+	if (!updater)
+	{
+		response.code = HTTP_STATUS_CONFLICT;
+		return;
+	}
+
+	StaticJsonDocument<128> root;
+	if (request.getBodyStream() == nullptr || !Json::deserialize(root, request.getBodyStream()) || !root.containsKey("timezone"))
+	{
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
+
+	String timezone = String(root["timezone"]);
+	boolean success = timeKeeper.setTimeZone(timezone);
+	if (!success)
+	{
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
+
+	updater.setTimezone(timezone); // ToDo: Get string from request
+}
+
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
 	response.sendFile("index.html", false);
@@ -189,7 +234,9 @@ void startWebServer()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
+	server.paths.set("/api/settings", onSettings);
 	server.paths.set("/api/settings/wifi", onUpdateWifi);
+	server.paths.set("/api/settings/timezone", onUpdateTimezone);
 	server.paths.setDefault(onFile);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
 
@@ -224,7 +271,7 @@ bool mountFileSystem()
 
 void onWifiConnect(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	ntpClient.setAutoQuery(true);
+	timeKeeper.enableAutoQuery(true);
 
 	if (WifiAccessPoint.isEnabled())
 	{
@@ -235,7 +282,7 @@ void onWifiConnect(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 void onWifiDisconnect(const String &ssid, MacAddress mac, WifiDisconnectReason reason)
 {
-	ntpClient.setAutoQuery(true);
+	timeKeeper.enableAutoQuery(false);
 
 	if (!WifiAccessPoint.isEnabled())
 	{
@@ -249,7 +296,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-	ntpClient.setAutoQuery(false);
 	mountFileSystem();
 
 	WifiStation.enable(true);
@@ -261,7 +307,8 @@ void init()
 	ledStrip.clear();
 
 	System.onReady(startWebServer);
+	SystemClock.onCheckTimeZoneOffset([](time_t systemTime)
+									  { timeKeeper.updateSystemTimeZone(systemTime); });
 
-	SystemClock.setTimeZone(1); // ToDo: Use dynamic timezone instead of hardcoded offset (see: https://github.com/SmingHub/Sming/blob/5.2.0/samples/SystemClock_NTP/app/NtpClientDemo.cpp)
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
 }

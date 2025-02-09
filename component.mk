@@ -14,10 +14,10 @@
 # COMPONENT_INCDIRS := include
 
 ## If you require any Libraries list them here
-ARDUINO_LIBRARIES := ArduinoJson6 Adafruit_NeoPixel
+ARDUINO_LIBRARIES := Timezone ArduinoJson6 Adafruit_NeoPixel
 
 ## List the names of any additional Components required for this project
-# COMPONENT_DEPENDS :=
+COMPONENT_DEPENDS := ConfigDB
 
 ## Set paths for any GIT submodules your application uses
 # COMPONENT_SUBMODULES :=
