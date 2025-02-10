@@ -1,5 +1,5 @@
 <template>
   <ColorForm />
   <WifiForm />
-  <!-- ToDo: Add time zone settings -->
+  <TimeZoneForm />
 </template>
