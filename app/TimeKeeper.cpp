@@ -17,20 +17,7 @@ TimeKeeper::~TimeKeeper()
 
 void TimeKeeper::onNtpResponse(NtpClient &client, time_t ntpTime)
 {
-    updateSystemTimeZone(ntpTime);
-}
-
-void TimeKeeper::updateSystemTimeZone(time_t systemTime)
-{
-    static ZonedTime nextChange{TZ::invalidTime};
-
-    if (nextChange == TZ::invalidTime)
-        nextChange = timeZone.makeZoned(systemTime);
-    else if (systemTime < nextChange)
-        return;
-
-    SystemClock.setTimeZone(nextChange.getZoneInfo());
-    nextChange = timeZone.getNextChange(systemTime);
+    SystemClock.setTime(ntpTime, eTZ_UTC);
 }
 
 boolean TimeKeeper::setTimeZone(String zoneName)
@@ -40,10 +27,13 @@ boolean TimeKeeper::setTimeZone(String zoneName)
         return false;
 
     timeZone = Timezone::fromPosix(zone->tzstr);
+    SystemClock.setTimeZone(timeZone.makeZoned(SystemClock.now()).getZoneInfo());
+
     return true;
 }
 
 void TimeKeeper::enableAutoQuery(boolean enabled)
 {
     client->setAutoQuery(enabled);
+    client->requestTime();
 }

@@ -8,7 +8,6 @@ public:
     ~TimeKeeper();
 
     boolean setTimeZone(String timeZone);
-    void updateSystemTimeZone(time_t systemTime);
     void enableAutoQuery(boolean enabled);
 
 private:

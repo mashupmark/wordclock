@@ -9,7 +9,7 @@
 Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
 Config::Settings settings(config);
 
-TimeKeeper timeKeeper("pool.ntp.org", 60 * 60 * 1000);
+TimeKeeper timeKeeper("pool.ntp.org", 60 * 60); // Update time every hour
 HttpServer server;
 
 #define LED_PIN 12
@@ -327,9 +327,10 @@ void init()
 	ledStrip.begin();
 	ledStrip.clear();
 
+	// Initialize everything based on config
+	timeKeeper.setTimeZone(settings.getTimezone());
+
 	System.onReady(startWebServer);
-	SystemClock.onCheckTimeZoneOffset([](time_t systemTime)
-									  { timeKeeper.updateSystemTimeZone(systemTime); });
 
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
 }
