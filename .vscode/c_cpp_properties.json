@@ -33,6 +33,7 @@
                 "${SMING_HOME}/Arch/Esp8266/Components/esp_wifi/include",
                 "${SMING_HOME}/Components/FlashString/src/include",
                 "${SMING_HOME}/Libraries/Spiffs/src/include",
+                "${SMING_HOME}/Libraries/LittleFS/src/include",
                 "${SMING_HOME}/Components/IFS/src/include",
                 "${SMING_HOME}/Libraries/SPI/src",
                 "${SMING_HOME}/Libraries/SPI/src/Arch/Esp8266",

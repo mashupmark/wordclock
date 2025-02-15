@@ -1,12 +1,13 @@
 #include <SmingCore.h>
+#include <LittleFS.h>
 #include <JsonObjectStream.h>
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 #include <config.h>
 #include <ConfigDB/Json/Format.h>
 #include <TimeKeeper.h>
 
-Config database("wordclock");
-Config::Root::Settings settings(database);
+Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
+Config::Settings settings(config);
 
 TimeKeeper timeKeeper("pool.ntp.org", 60 * 60 * 1000);
 HttpServer server;
@@ -185,7 +186,7 @@ void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
 		return;
 	}
 
-	updater.setTimezone(timezone); // ToDo: Get string from request
+	updater.setTimezone(timezone);
 }
 
 void onIndex(HttpRequest &request, HttpResponse &response)
@@ -249,6 +250,7 @@ void startWebServer()
 
 bool mountFileSystem()
 {
+	// Mount ifs read only file system with frontend
 	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 	auto fs = IFS::createFirmwareFilesystem(part);
 	if (fs == nullptr)
@@ -266,6 +268,25 @@ bool mountFileSystem()
 	}
 
 	fileSetFileSystem(fs);
+
+	// Add second LFS based file system to store config in
+	part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::littlefs);
+	auto lfs = IFS::createLfsFilesystem(part);
+	if (lfs == nullptr)
+	{
+		debugf("Failed to create LFS filesystem");
+		return false;
+	}
+
+	res = lfs->mount();
+	if (res != FS_OK)
+	{
+		debugf("Failed to mount LFS file system %s", fs->getErrorString(res).c_str());
+		delete fs;
+		return false;
+	}
+	fs->setVolume(0, lfs);
+
 	return true;
 }
 

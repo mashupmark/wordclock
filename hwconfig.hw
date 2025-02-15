@@ -4,7 +4,7 @@
     "partitions": {
         "fwfs0": {
             "address": "0x000fa000",
-            "size": "3M",
+            "size": "3000K",
             "type": "data",
             "subtype": "fwfs",
             "filename": "out/fwfs0.bin",
@@ -12,6 +12,12 @@
                 "target": "fwfs-build",
                 "config": "fsimage.fwfs"
             }
+        },
+        "lfs0": {
+            "address": "0x003e8000",
+            "size": "72K",
+            "type": "data",
+            "subtype": "littlefs"
         }
     }
 }

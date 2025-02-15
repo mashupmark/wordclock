@@ -17,7 +17,7 @@
 ARDUINO_LIBRARIES := Timezone ArduinoJson6 Adafruit_NeoPixel
 
 ## List the names of any additional Components required for this project
-COMPONENT_DEPENDS := ConfigDB
+COMPONENT_DEPENDS := ConfigDB LittleFS
 
 ## Set paths for any GIT submodules your application uses
 # COMPONENT_SUBMODULES :=

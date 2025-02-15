@@ -3,6 +3,9 @@
     "source": {
         "/": "web/.output/public"
     },
+    "mountpoints": {
+        "config": 0
+    },
     "rules": [
         {
             "mask": "*",

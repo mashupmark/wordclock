@@ -5,6 +5,7 @@
   "properties": {
     "settings": {
       "type": "object",
+      "store": true,
       "properties": {
         "timezone": {
           "type": "string",
