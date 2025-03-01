@@ -281,8 +281,8 @@ bool mountFileSystem()
 	res = lfs->mount();
 	if (res != FS_OK)
 	{
-		debugf("Failed to mount LFS file system %s", fs->getErrorString(res).c_str());
-		delete fs;
+		debugf("Failed to mount LFS file system %s", lfs->getErrorString(res).c_str());
+		delete lfs;
 		return false;
 	}
 	fs->setVolume(0, lfs);
