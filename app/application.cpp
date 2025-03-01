@@ -7,7 +7,6 @@
 #include <TimeKeeper.h>
 
 Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
-Config::Settings settings(config);
 
 TimeKeeper timeKeeper("pool.ntp.org", 60 * 60); // Update time every hour
 HttpServer server;
@@ -158,12 +157,14 @@ void onSettings(HttpRequest &request, HttpResponse &response)
 		return;
 	}
 
+	Config::Settings settings(config); // Client for store needs to be initialized on demand to use the latest data
 	auto stream = settings.createExportStream(ConfigDB::Json::format);
 	response.sendDataStream(stream.release(), MIME_JSON);
 }
 
 void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
 {
+	Config::Settings settings(config);
 	auto updater = settings.update();
 	if (!updater)
 	{
@@ -326,6 +327,8 @@ void init()
 
 	ledStrip.begin();
 	ledStrip.clear();
+
+	Config::Settings settings(config);
 
 	// Initialize everything based on config
 	timeKeeper.setTimeZone(settings.getTimezone());
