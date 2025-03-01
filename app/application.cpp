@@ -199,7 +199,12 @@ void onFile(HttpRequest &request, HttpResponse &response)
 {
 	String file = request.uri.getRelativePath();
 
-	response.setCache(86400, true);
+	// Config files should not be cached
+	if (!file.startsWith("config/"))
+	{
+		response.setCache(86400, true);
+	}
+
 	response.sendFile(file, false);
 }
 
