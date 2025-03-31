@@ -6,7 +6,7 @@
 		"dockerfile": "Dockerfile"
 	},
 	"features": {
-		"ghcr.io/devcontainers/features/common-utils:2.5.2": {
+		"ghcr.io/devcontainers/features/common-utils:2.5.3": {
 			"installZsh": false,
 			"configureZshAsDefaultShell": false,
 			"installOhMyZsh": false,
