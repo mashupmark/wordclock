@@ -5,6 +5,7 @@
 #include <config.h>
 #include <ConfigDB/Json/Format.h>
 #include <TimeKeeper.h>
+#include <utils.h>
 
 Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
 
@@ -142,11 +143,20 @@ void displayTime(DateTime dt, uint32_t color)
 Timer clockTimer;
 void clockTimerCallback()
 {
+	Config::Clock clock(config);
 	auto dt = DateTime(SystemClock.now());
-	if (dt.Minute % 5 != 0 && dt.Second < 1) // Save some performance as this only needs to run for the first second of every 5th minute
-		return;
 
-	displayTime(dt, 0xff0000);
+	using Tags = Config::Clock::Animation::Tag;
+	switch (clock.animation.getTag())
+	{
+	case Tags::Static:
+	{
+		auto color = hexColorToInt(clock.animation.asStatic().getColor().c_str());
+		return displayTime(dt, color);
+	}
+	default:
+		return displayTime(dt, 0xff0000);
+	}
 }
 
 void onSettings(HttpRequest &request, HttpResponse &response)
@@ -160,6 +170,31 @@ void onSettings(HttpRequest &request, HttpResponse &response)
 	Config::Settings settings(config); // Client for store needs to be initialized on demand to use the latest data
 	auto stream = settings.createExportStream(ConfigDB::Json::format);
 	response.sendDataStream(stream.release(), MIME_JSON);
+}
+
+void onUpdateColor(HttpRequest &request, HttpResponse &response)
+{
+	Config::Clock clock(config);
+	auto updater = clock.update();
+	if (!updater)
+	{
+		response.code = HTTP_STATUS_CONFLICT;
+		return;
+	}
+
+	StaticJsonDocument<128> root;
+	if (request.getBodyStream() == nullptr || !Json::deserialize(root, request.getBodyStream()) || !root.containsKey("color"))
+	{
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
+
+	auto colorInt = hexColorToInt(root["color"]);
+	debugf("colorInt %x", colorInt);
+
+	auto animation = updater.animation.asStatic();
+	animation.setName("static");
+	animation.setColor(root["color"]);
 }
 
 void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
@@ -188,24 +223,6 @@ void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
 	}
 
 	updater.setTimezone(timezone);
-}
-
-void onIndex(HttpRequest &request, HttpResponse &response)
-{
-	response.sendFile("index.html", false);
-}
-
-void onFile(HttpRequest &request, HttpResponse &response)
-{
-	String file = request.uri.getRelativePath();
-
-	// Config files should not be cached
-	if (!file.startsWith("config/"))
-	{
-		response.setCache(86400, true);
-	}
-
-	response.sendFile(file, false);
 }
 
 void onUpdateWifi(HttpRequest &request, HttpResponse &response)
@@ -237,11 +254,30 @@ void onUpdateWifi(HttpRequest &request, HttpResponse &response)
 	WifiStation.connect();
 }
 
+void onIndex(HttpRequest &request, HttpResponse &response)
+{
+	response.sendFile("index.html", false);
+}
+
+void onFile(HttpRequest &request, HttpResponse &response)
+{
+	String file = request.uri.getRelativePath();
+
+	// Config files should not be cached
+	if (!file.startsWith("config/"))
+	{
+		response.setCache(86400, true);
+	}
+
+	response.sendFile(file, false);
+}
+
 void startWebServer()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
 	server.paths.set("/api/settings", onSettings);
+	server.paths.set("/api/settings/color", onUpdateColor);
 	server.paths.set("/api/settings/wifi", onUpdateWifi);
 	server.paths.set("/api/settings/timezone", onUpdateTimezone);
 	server.paths.setDefault(onFile);

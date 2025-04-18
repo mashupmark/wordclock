@@ -3,6 +3,38 @@
   "type": "object",
   "store": true,
   "properties": {
+    "clock": {
+      "type": "object",
+      "store": true,
+      "properties": {
+        "animation": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "oneOf": [
+            {
+              "title": "Static",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "const": "static"
+                },
+                "color": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "settings": {
       "type": "object",
       "store": true,
