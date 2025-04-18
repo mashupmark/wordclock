@@ -229,7 +229,7 @@ void onUpdateWifi(HttpRequest &request, HttpResponse &response)
 {
 	debugf("Trying to update wifi config");
 
-	if (request.method != HTTP_POST || request.getBodyStream() == nullptr)
+	if (request.getBodyStream() == nullptr)
 	{
 		response.code = HTTP_STATUS_BAD_REQUEST;
 		return;

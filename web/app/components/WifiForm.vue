@@ -14,10 +14,10 @@ type Schema = v.InferOutput<typeof schema>;
 const state = reactive<Schema>({ SSID: "", PW: "" });
 
 const isSaving = ref(false);
-const onSubmit = async (data: FormSubmitEvent<Schema>) => {
+const onSubmit = async () => {
   try {
     isSaving.value = true;
-    await $fetch("/api/settings/wifi", { method: "PUT", body: data });
+    await $fetch("/api/settings/wifi", { method: "put", body: state });
   } catch {
     toast.add({
       title: "Error",
