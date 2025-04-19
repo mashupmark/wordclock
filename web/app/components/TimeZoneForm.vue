@@ -21,8 +21,8 @@ watchEffect(() => {
 const { status: saveStatus, execute: save } = useAsyncData(
   async () => {
     try {
-      await $fetch("/api/settings/timezone", {
-        method: "PUT",
+      await $fetch("/api/settings", {
+        method: "POST",
         body: { timezone: state.timezone },
       });
     } catch {

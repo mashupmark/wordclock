@@ -161,13 +161,28 @@ void clockTimerCallback()
 
 void onSettings(HttpRequest &request, HttpResponse &response)
 {
-	if (request.method != HTTP_GET)
+	Config::Settings settings(config); // Client for store needs to be initialized on demand to use the latest data
+
+	if (request.method == HTTP_POST)
 	{
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		return;
+		debugf("Updating settings");
+
+		IDataSourceStream *stream = request.getBodyStream();
+		if (stream == nullptr)
+		{
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			return;
+		}
+
+		auto updater = settings.update();
+		ConfigDB::Status ok = updater.importFromStream(ConfigDB::Json::format, *stream);
+		if (!ok)
+		{
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			return;
+		}
 	}
 
-	Config::Settings settings(config); // Client for store needs to be initialized on demand to use the latest data
 	auto stream = settings.createExportStream(ConfigDB::Json::format);
 	response.sendDataStream(stream.release(), MIME_JSON);
 }
@@ -189,40 +204,9 @@ void onUpdateColor(HttpRequest &request, HttpResponse &response)
 		return;
 	}
 
-	auto colorInt = hexColorToInt(root["color"]);
-	debugf("colorInt %x", colorInt);
-
 	auto animation = updater.animation.asStatic();
 	animation.setName("static");
 	animation.setColor(root["color"]);
-}
-
-void onUpdateTimezone(HttpRequest &request, HttpResponse &response)
-{
-	Config::Settings settings(config);
-	auto updater = settings.update();
-	if (!updater)
-	{
-		response.code = HTTP_STATUS_CONFLICT;
-		return;
-	}
-
-	StaticJsonDocument<128> root;
-	if (request.getBodyStream() == nullptr || !Json::deserialize(root, request.getBodyStream()) || !root.containsKey("timezone"))
-	{
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		return;
-	}
-
-	String timezone = String(root["timezone"]);
-	boolean success = timeKeeper.setTimeZone(timezone);
-	if (!success)
-	{
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		return;
-	}
-
-	updater.setTimezone(timezone);
 }
 
 void onUpdateWifi(HttpRequest &request, HttpResponse &response)
@@ -279,7 +263,6 @@ void startWebServer()
 	server.paths.set("/api/settings", onSettings);
 	server.paths.set("/api/settings/color", onUpdateColor);
 	server.paths.set("/api/settings/wifi", onUpdateWifi);
-	server.paths.set("/api/settings/timezone", onUpdateTimezone);
 	server.paths.setDefault(onFile);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
 
