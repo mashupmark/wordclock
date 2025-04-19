@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="TSchema extends ObjectSchema<any, any>">
-import { type ObjectSchema, type InferOutput, safeParser } from "valibot";
+import { type ObjectSchema, type InferOutput } from "valibot";
 import type { FormSubmitEvent } from "#ui/types";
 
 const props = defineProps<{
@@ -18,24 +18,24 @@ const emit = defineEmits<{
 <template>
   <UForm
     class="flex flex-col gap-2 p-4 border-b border-gray-200 dark:border-gray-800"
-    :schema="safeParser(props.schema)"
+    :schema="props.schema"
     :state="props.state"
     @submit="emit('submit', $event)"
   >
-    <UFormGroup
+    <UFormField
       :label="title"
       :description
       size="xl"
       class="pb-2 flex justify-between"
-      :ui="{ label: { base: 'font-semibold' } }"
+      :ui="{ label: 'font-semibold' }"
     >
       <UButton
         label="Save changes"
         type="submit"
-        color="black"
+        color="neutral"
         :loading="props.isSaving"
       />
-    </UFormGroup>
+    </UFormField>
 
     <slot />
   </UForm>

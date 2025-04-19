@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import * as v from "valibot";
-import type { FormSubmitEvent } from "#ui/types";
 import SettingsSection from "./SettingsSection.vue";
 
 const toast = useToast();
@@ -22,7 +21,7 @@ const onSubmit = async () => {
     toast.add({
       title: "Error",
       description: "Failed to update wifi credentials",
-      color: "red",
+      color: "error",
     });
   } finally {
     isSaving.value = false;
@@ -39,15 +38,16 @@ const onSubmit = async () => {
     :isSaving
     @submit="onSubmit"
   >
-    <UFormGroup label="SSID" name="SSID" required>
-      <UInput v-model="state.SSID" />
-    </UFormGroup>
-    <UFormGroup label="Password" name="PW" required>
+    <UFormField label="SSID" required>
+      <UInput v-model="state.SSID" class="w-full" />
+    </UFormField>
+    <UFormField label="Password" required>
       <UInput
+        class="w-full"
         v-model="state.PW"
         type="password"
         trailing-icon="i-heroicons-lock-closed"
       />
-    </UFormGroup>
+    </UFormField>
   </SettingsSection>
 </template>

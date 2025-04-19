@@ -21,11 +21,10 @@ useHead({
   <div>
     <NuxtLoadingIndicator />
 
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-
-    <UNotifications />
-    <UModals />
+    <UApp>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UApp>
   </div>
 </template>

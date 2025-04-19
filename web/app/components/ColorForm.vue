@@ -30,7 +30,7 @@ const { status: saveStatus, execute: save } = useAsyncData(
         } satisfies ClockSettings,
       });
     } catch {
-      toast.add({ title: "Failed to update color", color: "red" });
+      toast.add({ title: "Failed to update color", color: "error" });
     }
   },
   { immediate: false }
@@ -46,14 +46,15 @@ const { status: saveStatus, execute: save } = useAsyncData(
     :isSaving="saveStatus === 'pending'"
     @submit="save()"
   >
-    <UFormGroup label="Color" name="color" required>
+    <UFormField label="Color" required>
       <UInput
+        class="w-full"
+        :ui="{ base: 'h-8 p-0' }"
         v-model="state.color"
         type="color"
         variant="none"
-        :padded="false"
         :loading="status === 'pending'"
       />
-    </UFormGroup>
+    </UFormField>
   </SettingsSection>
 </template>

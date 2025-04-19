@@ -27,7 +27,7 @@ const { status: saveStatus, execute: save } = useAsyncData(
         body: { timezone: state.timezone } satisfies GeneralSettings,
       });
     } catch {
-      toast.add({ title: "Failed to update time zone", color: "red" });
+      toast.add({ title: "Failed to update time zone", color: "error" });
     }
   },
   { immediate: false }
@@ -43,12 +43,14 @@ const { status: saveStatus, execute: save } = useAsyncData(
     :isSaving="saveStatus === 'pending'"
     @submit="save()"
   >
-    <UFormGroup label="Time zone" name="timezone" required>
-      <UInputMenu
+    <UFormField label="Time zone" required>
+      <USelectMenu
+        class="w-full"
         v-model="state.timezone"
-        :options="timeZonesNames"
+        :items="timeZonesNames"
         :loading="status === 'pending'"
+        required
       />
-    </UFormGroup>
+    </UFormField>
   </SettingsSection>
 </template>
