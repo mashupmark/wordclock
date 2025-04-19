@@ -24,10 +24,12 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "const": "static"
+                  "const": "static",
+                  "default": "static"
                 },
                 "color": {
-                  "type": "string"
+                  "type": "string",
+                  "default": "#ff0000"
                 }
               }
             }

@@ -352,12 +352,14 @@ void init()
 	ledStrip.begin();
 	ledStrip.clear();
 
+	// Initialize all config files (will use defaults defined in config.cfgdb as fallback)
+	Config::Clock clock(config);
 	Config::Settings settings(config);
+	clock.exportToFile(ConfigDB::Json::format, "config/clock.json");
+	settings.exportToFile(ConfigDB::Json::format, "config/settings.json");
 
-	// Initialize everything based on config
 	timeKeeper.setTimeZone(settings.getTimezone());
 
 	System.onReady(startWebServer);
-
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
 }
