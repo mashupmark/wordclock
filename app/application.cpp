@@ -29,8 +29,9 @@ Adafruit_NeoPixel ledStrip(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 	50 -> Zehn vor {hour+1}
 	55 -> Fünf vor {hour+1}
  */
-void displayTime(DateTime dt, uint32_t color)
+void displayTime(DateTime dt, uint32_t color, uint8_t brighness = 255)
 {
+	ledStrip.setBrightness(brighness);
 	ledStrip.clear();
 
 	ledStrip.fill(color, 0, 2); // "Es"
@@ -144,6 +145,7 @@ Timer clockTimer;
 void clockTimerCallback()
 {
 	Config::Clock clockSettings(config);
+	Config::Settings generalSettings(config);
 	auto dt = DateTime(SystemClock.now());
 
 	using Tags = Config::Clock::Animation::Tag;
@@ -152,10 +154,10 @@ void clockTimerCallback()
 	case Tags::Static:
 	{
 		auto color = hexColorToInt(clockSettings.animation.asStatic().getColor().c_str());
-		return displayTime(dt, color);
+		return displayTime(dt, color, generalSettings.getBrightness());
 	}
 	default:
-		return displayTime(dt, 0xff0000);
+		return displayTime(dt, 0xff0000, generalSettings.getBrightness());
 	}
 }
 

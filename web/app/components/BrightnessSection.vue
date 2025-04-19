@@ -1,22 +1,23 @@
 <script lang="ts" setup>
 import * as v from "valibot";
 import SettingsSection from "./SettingsSection.vue";
-import { timeZonesNames } from "@vvo/tzdb";
 import type { GeneralSettings } from "~~/shared/types/api";
 
 const toast = useToast();
 
-const schema = v.object({ timezone: v.string() });
+const schema = v.object({
+  brightness: v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(255)),
+});
 type Schema = v.InferOutput<typeof schema>;
 
-const state = reactive<Schema>({ timezone: "" });
+const state = reactive<Schema>({ brightness: 255 });
 
 const { status, data } = useFetch<GeneralSettings>("/api/settings", {
   server: false,
 });
 watchEffect(() => {
   if (!data.value) return;
-  state.timezone = data.value.timezone;
+  state.brightness = data.value.brightness;
 });
 
 const { status: saveStatus, execute: save } = useAsyncData(
@@ -24,10 +25,12 @@ const { status: saveStatus, execute: save } = useAsyncData(
     try {
       await $fetch("/api/settings", {
         method: "POST",
-        body: { timezone: state.timezone } satisfies Partial<GeneralSettings>,
+        body: {
+          brightness: state.brightness,
+        } satisfies Partial<GeneralSettings>,
       });
     } catch {
-      toast.add({ title: "Failed to update time zone", color: "error" });
+      toast.add({ title: "Failed to update brightness", color: "error" });
     }
   },
   { immediate: false }
@@ -36,20 +39,19 @@ const { status: saveStatus, execute: save } = useAsyncData(
 
 <template>
   <SettingsSection
-    title="Time zone"
-    description="Set the time zone the time should be displayed in (requires a restart to apply)"
+    title="Brightness"
+    description="Set the brightness of the leds"
     :schema
     :state
     :isSaving="saveStatus === 'pending'"
     @submit="save()"
   >
-    <UFormField label="Time zone" required>
-      <USelectMenu
-        class="w-full"
-        v-model="state.timezone"
-        :items="timeZonesNames"
-        :loading="status === 'pending'"
-        required
+    <UFormField label="Brightness" required>
+      <USlider
+        v-model="state.brightness"
+        :min="0"
+        :max="255"
+        :disabled="status === 'pending'"
       />
     </UFormField>
   </SettingsSection>

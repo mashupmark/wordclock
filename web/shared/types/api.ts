@@ -6,5 +6,6 @@ export type ClockSettings = {
 };
 
 export type GeneralSettings = {
+  brightness: number;
   timezone: string;
 };

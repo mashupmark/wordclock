@@ -41,6 +41,12 @@
       "type": "object",
       "store": true,
       "properties": {
+        "brightness": {
+          "type": "integer",
+          "default": 255,
+          "minimum": 0,
+          "maximum": 255
+        },
         "timezone": {
           "type": "string",
           "default": "Europe/Berlin",
