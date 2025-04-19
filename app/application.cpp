@@ -211,9 +211,9 @@ void onUpdateColor(HttpRequest &request, HttpResponse &response)
 
 void onUpdateWifi(HttpRequest &request, HttpResponse &response)
 {
-	debugf("Trying to update wifi config");
+	debugf("Updating wifi config");
 
-	if (request.getBodyStream() == nullptr)
+	if (request.method != HTTP_POST || request.getBodyStream() == nullptr)
 	{
 		response.code = HTTP_STATUS_BAD_REQUEST;
 		return;

@@ -17,7 +17,7 @@ const isSaving = ref(false);
 const onSubmit = async () => {
   try {
     isSaving.value = true;
-    await $fetch("/api/settings/wifi", { method: "put", body: state });
+    await $fetch("/api/settings/wifi", { method: "POST", body: state });
   } catch {
     toast.add({
       title: "Error",
