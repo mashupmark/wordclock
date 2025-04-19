@@ -2,6 +2,7 @@
 import * as v from "valibot";
 import SettingsSection from "./SettingsSection.vue";
 import { timeZonesNames } from "@vvo/tzdb";
+import type { GeneralSettings } from "~~/shared/types/api";
 
 const toast = useToast();
 
@@ -10,7 +11,7 @@ type Schema = v.InferOutput<typeof schema>;
 
 const state = reactive<Schema>({ timezone: "" });
 
-const { status, data } = useFetch<{ timezone: string }>("/api/settings", {
+const { status, data } = useFetch<GeneralSettings>("/api/settings", {
   server: false,
 });
 watchEffect(() => {
@@ -23,7 +24,7 @@ const { status: saveStatus, execute: save } = useAsyncData(
     try {
       await $fetch("/api/settings", {
         method: "POST",
-        body: { timezone: state.timezone },
+        body: { timezone: state.timezone } satisfies GeneralSettings,
       });
     } catch {
       toast.add({ title: "Failed to update time zone", color: "red" });
@@ -36,7 +37,7 @@ const { status: saveStatus, execute: save } = useAsyncData(
 <template>
   <SettingsSection
     title="Time zone"
-    description="Set the time zone the time should be displayed in"
+    description="Set the time zone the time should be displayed in (requires a restart to apply)"
     :schema
     :state
     :isSaving="saveStatus === 'pending'"

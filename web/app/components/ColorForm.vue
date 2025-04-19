@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import * as v from "valibot";
 import SettingsSection from "./SettingsSection.vue";
+import type { ClockSettings } from "~~/shared/types/api";
 
 const toast = useToast();
 
@@ -11,12 +12,22 @@ type Schema = v.InferOutput<typeof schema>;
 
 const state = reactive<Schema>({ color: "#ff0000" });
 
+const { status, data } = useFetch<ClockSettings>("/api/clock", {
+  server: false,
+});
+watchEffect(() => {
+  if (!data.value) return;
+  state.color = data.value.animation.Static.color;
+});
+
 const { status: saveStatus, execute: save } = useAsyncData(
   async () => {
     try {
-      await $fetch("/api/settings/color", {
-        method: "PUT",
-        body: { color: state.color },
+      await $fetch("/api/clock", {
+        method: "POST",
+        body: {
+          animation: { Static: { name: "static", color: state.color } },
+        } satisfies ClockSettings,
       });
     } catch {
       toast.add({ title: "Failed to update color", color: "red" });
@@ -41,6 +52,7 @@ const { status: saveStatus, execute: save } = useAsyncData(
         type="color"
         variant="none"
         :padded="false"
+        :loading="status === 'pending'"
       />
     </UFormGroup>
   </SettingsSection>

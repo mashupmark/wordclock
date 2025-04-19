@@ -143,15 +143,15 @@ void displayTime(DateTime dt, uint32_t color)
 Timer clockTimer;
 void clockTimerCallback()
 {
-	Config::Clock clock(config);
+	Config::Clock clockSettings(config);
 	auto dt = DateTime(SystemClock.now());
 
 	using Tags = Config::Clock::Animation::Tag;
-	switch (clock.animation.getTag())
+	switch (clockSettings.animation.getTag())
 	{
 	case Tags::Static:
 	{
-		auto color = hexColorToInt(clock.animation.asStatic().getColor().c_str());
+		auto color = hexColorToInt(clockSettings.animation.asStatic().getColor().c_str());
 		return displayTime(dt, color);
 	}
 	default:
@@ -161,21 +161,19 @@ void clockTimerCallback()
 
 void onSettings(HttpRequest &request, HttpResponse &response)
 {
-	Config::Settings settings(config); // Client for store needs to be initialized on demand to use the latest data
+	Config::Settings generalSettings(config); // Client for store needs to be initialized on demand to use the latest data
 
 	if (request.method == HTTP_POST)
 	{
-		debugf("Updating settings");
-
-		IDataSourceStream *stream = request.getBodyStream();
-		if (stream == nullptr)
+		IDataSourceStream *requestBodyStream = request.getBodyStream();
+		if (requestBodyStream == nullptr)
 		{
 			response.code = HTTP_STATUS_BAD_REQUEST;
 			return;
 		}
 
-		auto updater = settings.update();
-		ConfigDB::Status ok = updater.importFromStream(ConfigDB::Json::format, *stream);
+		auto updater = generalSettings.update();
+		ConfigDB::Status ok = updater.importFromStream(ConfigDB::Json::format, *requestBodyStream);
 		if (!ok)
 		{
 			response.code = HTTP_STATUS_BAD_REQUEST;
@@ -183,30 +181,34 @@ void onSettings(HttpRequest &request, HttpResponse &response)
 		}
 	}
 
-	auto stream = settings.createExportStream(ConfigDB::Json::format);
-	response.sendDataStream(stream.release(), MIME_JSON);
+	auto exportStream = generalSettings.createExportStream(ConfigDB::Json::format);
+	response.sendDataStream(exportStream.release(), MIME_JSON);
 }
 
-void onUpdateColor(HttpRequest &request, HttpResponse &response)
+void onClock(HttpRequest &request, HttpResponse &response)
 {
-	Config::Clock clock(config);
-	auto updater = clock.update();
-	if (!updater)
+	Config::Clock clockSettings(config);
+
+	if (request.method == HTTP_POST)
 	{
-		response.code = HTTP_STATUS_CONFLICT;
-		return;
+		IDataSourceStream *requestBodyStream = request.getBodyStream();
+		if (requestBodyStream == nullptr)
+		{
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			return;
+		}
+
+		auto updater = clockSettings.update();
+		ConfigDB::Status ok = clockSettings.importFromStream(ConfigDB::Json::format, *requestBodyStream);
+		if (!ok)
+		{
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			return;
+		}
 	}
 
-	StaticJsonDocument<128> root;
-	if (request.getBodyStream() == nullptr || !Json::deserialize(root, request.getBodyStream()) || !root.containsKey("color"))
-	{
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		return;
-	}
-
-	auto animation = updater.animation.asStatic();
-	animation.setName("static");
-	animation.setColor(root["color"]);
+	auto exportStream = clockSettings.createExportStream(ConfigDB::Json::format);
+	response.sendDataStream(exportStream.release(), MIME_JSON);
 }
 
 void onUpdateWifi(HttpRequest &request, HttpResponse &response)
@@ -260,8 +262,8 @@ void startWebServer()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
+	server.paths.set("/api/clock", onClock);
 	server.paths.set("/api/settings", onSettings);
-	server.paths.set("/api/settings/color", onUpdateColor);
 	server.paths.set("/api/settings/wifi", onUpdateWifi);
 	server.paths.setDefault(onFile);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
@@ -353,12 +355,12 @@ void init()
 	ledStrip.clear();
 
 	// Initialize all config files (will use defaults defined in config.cfgdb as fallback)
-	Config::Clock clock(config);
-	Config::Settings settings(config);
-	clock.exportToFile(ConfigDB::Json::format, "config/clock.json");
-	settings.exportToFile(ConfigDB::Json::format, "config/settings.json");
+	Config::Clock clockSettings(config);
+	Config::Settings generalSettings(config);
+	clockSettings.exportToFile(ConfigDB::Json::format, "config/clock.json");
+	generalSettings.exportToFile(ConfigDB::Json::format, "config/settings.json");
 
-	timeKeeper.setTimeZone(settings.getTimezone());
+	timeKeeper.setTimeZone(generalSettings.getTimezone());
 
 	System.onReady(startWebServer);
 	clockTimer.initializeMs(1000, clockTimerCallback).start();
