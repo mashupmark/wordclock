@@ -8,6 +8,7 @@ const props = defineProps<{
   state: InferOutput<TSchema>;
   schema: TSchema;
   isSaving?: boolean;
+  isDisabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -34,6 +35,7 @@ const emit = defineEmits<{
         type="submit"
         color="neutral"
         :loading="props.isSaving"
+        :disabled="props.isDisabled"
       />
     </UFormField>
 

@@ -6,24 +6,28 @@
 class Screen
 {
 public:
-    Screen(int width, int height, uint8_t refreshRate);
+    Screen(int width, int height, Config *config);
     ~Screen();
 
     void setRenderFn(Delegate<uint32_t(uint8_t x, uint8_t y, uint8_t t)> fn);
+    void setRefreshRate(uint8_t refreshRate);
 
 private:
+    Config *config;
+
     Adafruit_NeoPixel *ledStrip;
     Timer *refreshTimer;
 
     int width, height;
     uint8_t t;
     Delegate<uint32_t(uint8_t x, uint8_t y, uint8_t t)> renderFn;
-
     void updateScreen();
 };
 
-Screen::Screen(int width, int height, uint8_t refreshRate)
+Screen::Screen(int width, int height, Config *config)
 {
+    this->config = config;
+
     this->width = width;
     this->height = height;
 
@@ -33,7 +37,7 @@ Screen::Screen(int width, int height, uint8_t refreshRate)
     this->ledStrip->clear();
 
     this->refreshTimer = new Timer();
-    this->refreshTimer->initializeMs(1000 / refreshRate, std::bind(&Screen::updateScreen, this)).start();
+    this->refreshTimer->setCallback(std::bind(&Screen::updateScreen, this));
 }
 
 Screen::~Screen()
@@ -41,6 +45,16 @@ Screen::~Screen()
     this->refreshTimer->stop();
     delete this->refreshTimer;
     delete this->ledStrip;
+}
+
+void Screen::setRefreshRate(uint8_t refreshRate)
+{
+    this->refreshTimer->stop();
+    if (refreshRate > 0)
+    {
+        this->refreshTimer->setIntervalMs(1000 / refreshRate);
+        this->refreshTimer->start();
+    }
 }
 
 void Screen::setRenderFn(Delegate<uint32_t(uint8_t x, uint8_t y, uint8_t t)> fn)
@@ -53,6 +67,8 @@ void Screen::updateScreen()
     if (this->renderFn == nullptr)
         return;
 
+    Config::Settings generalSettings(*this->config);
+
     this->t++;
     for (int y = 0; y < this->height; y++)
     {
@@ -64,6 +80,16 @@ void Screen::updateScreen()
         }
     }
 
-    ledStrip->setBrightness(255);
+    uint8_t brightness = generalSettings.getMaxBrightness();
+
+    // Night mode, automatically dim the brightness by the specified percentage
+    auto currentTime = DateTime(SystemClock.now()).format("%H:%M");
+    uint8_t dimmingAmount = generalSettings.nightMode.getDimmingAmount();
+    if (dimmingAmount > 0 && currentTime >= generalSettings.nightMode.getStartTime() && currentTime < generalSettings.nightMode.getEndTime())
+    {
+        brightness = (uint8_t)(brightness * (dimmingAmount / 255.0f));
+    }
+
+    ledStrip->setBrightness(brightness);
     ledStrip->show();
 }

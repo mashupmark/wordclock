@@ -6,6 +6,11 @@ export type ClockSettings = {
 };
 
 export type GeneralSettings = {
-  brightness: number;
+  maxBrightness: number;
+  nightMode?: {
+    startTime?: string;
+    endTime?: string;
+    dimmingAmount: number;
+  };
   timezone: string;
 };

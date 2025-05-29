@@ -6,15 +6,12 @@ class Wordclock
 {
 public:
     Wordclock(int width, int height, Config *config);
-    ~Wordclock();
 
     uint32_t getColor(uint8_t x, uint8_t y);
 
 private:
     int width, height;
-
-    Config::Clock *clockSettings;
-    Config::Settings *generalSettings;
+    Config *config;
 
     bool maskTime(DateTime dt, uint8_t x, uint8_t y);
 };
@@ -23,14 +20,7 @@ Wordclock::Wordclock(int width, int height, Config *config)
 {
     this->width = width;
     this->height = height;
-    this->clockSettings = new Config::Clock(*config);
-    this->generalSettings = new Config::Settings(*config);
-}
-
-Wordclock::~Wordclock()
-{
-    delete this->clockSettings;
-    delete this->generalSettings;
+    this->config = config;
 }
 
 uint32_t Wordclock::getColor(uint8_t x, uint8_t y)
@@ -40,12 +30,14 @@ uint32_t Wordclock::getColor(uint8_t x, uint8_t y)
     if (!enablePixel)
         return 0;
 
+    Config::Clock clockSettings(*this->config);
+
     using Tags = Config::Clock::Animation::Tag;
-    switch (this->clockSettings->animation.getTag())
+    switch (clockSettings.animation.getTag())
     {
     case Tags::Static:
     {
-        auto color = hexColorToInt(this->clockSettings->animation.asStatic().getColor().c_str());
+        auto color = hexColorToInt(clockSettings.animation.asStatic().getColor().c_str());
         return color;
     }
     default:

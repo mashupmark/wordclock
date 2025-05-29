@@ -193,7 +193,7 @@ bool mountFileSystem()
 	return true;
 }
 
-Screen screen(11, 10, 1);
+Screen screen(11, 10, &config);
 Wordclock wordclock(11, 10, &config);
 
 void init()
@@ -212,6 +212,7 @@ void init()
 	timeKeeper.setTimeZone(generalSettings.getTimezone());
 	screen.setRenderFn([](uint8_t x, uint8_t y, uint8_t t) -> uint32_t
 					   { return wordclock.getColor(x, y); });
+	screen.setRefreshRate(1);
 
 	WifiStation.enable(true);
 	WifiAccessPoint.config("Wordclock", "", WifiAuthMode::AUTH_OPEN);
