@@ -30,3 +30,11 @@ However, this is only the case if the image isn't cached already. Sming can't tr
 ```bash
 make buildpart
 ```
+
+### Release
+
+Generating a single binary:
+
+```bash
+/opt/sming/Sming/Components/esptool/esptool/esptool.py --chip esp8266 merge_bin -o ./wordclock-v1_0_0.bin --flash_mode dio --flash_freq 40m --flash_size 4MB 0x00000 ./out/Esp8266/release/firmware/rboot.bin 0x003fa000 ./out/Esp8266/release/firmware/partitions.bin 0x00002000 ./out/Esp8266/release/firmware/rom0.bin 0x000fa000 ./out/fwfs0.bin 0x003fc000 /opt/sming/Sming/Arch/Esp8266/Components/esp8266/sdk/bin/esp_init_data_default.bin
+```
