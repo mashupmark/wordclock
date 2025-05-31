@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "docs",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "catalog:",
-    "@vvo/tzdb": "^6.165.0",
     "nuxt": "catalog:",
-    "valibot": "1.1.0",
     "vue": "catalog:"
   },
   "devDependencies": {
