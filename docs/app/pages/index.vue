@@ -1,1 +1,3 @@
-<template>Hello World</template>
+<template>
+  <InstallButton manifest="/esp-manifest.json" />
+</template>

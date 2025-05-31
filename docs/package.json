@@ -11,7 +11,9 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/scripts": "0.11.7",
     "@nuxt/ui": "catalog:",
+    "@unhead/vue": "^2.0.10",
     "nuxt": "catalog:",
     "vue": "catalog:"
   },
