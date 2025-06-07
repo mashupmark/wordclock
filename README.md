@@ -10,10 +10,10 @@ The setup of this repo is based on devcontainers. To all that's required to use 
 
 There is currently an issue with forwarding devices to containers in Docker Desktop. So the easiest way of interacting with a device connected to the host maschine is the Telnet protocol (sounds stupid but that's the recommended way from Espressif: [Docs](https://docs.espressif.com/projects/esp-idf/en/v5.1/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port))
 
-First start the esptool server on your device:
+First start the esptool server on your device (mounting point may vary):
 
 ```bash
-esp_rfc2217_server.py -v -p 4000 /dev/cu.usbserial-120
+esp_rfc2217_server.py -v -p 4000 /dev/cu.usbserial-00001
 ```
 
 Then initiate the flashing process from the dev container:
