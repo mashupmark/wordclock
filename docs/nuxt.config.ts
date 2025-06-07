@@ -25,4 +25,7 @@ export default defineNuxtConfig({
   image: {
     dir: "assets/img",
   },
+
+  robots: { robotsTxt: false },
+  site: { indexable: false },
 });
