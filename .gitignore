@@ -5,3 +5,4 @@ out
 !.vscode/tasks.json
 
 node_modules
+docs/public/**.bin
