@@ -11,8 +11,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/image": "1.10.0",
     "@nuxt/scripts": "0.11.7",
     "@nuxt/ui": "catalog:",
+    "@nuxtjs/robots": "5.2.10",
     "@unhead/vue": "^2.0.10",
     "nuxt": "catalog:",
     "vue": "catalog:"

@@ -7,6 +7,7 @@ useHead({
   link: [{ rel: "icon", href: "/favicon.ico" }],
   htmlAttrs: {
     lang: "en",
+    class: "scroll-smooth",
   },
 });
 </script>

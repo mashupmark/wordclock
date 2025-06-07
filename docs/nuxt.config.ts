@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ["@nuxt/ui", "@nuxt/scripts"],
+  modules: ["@nuxt/ui", "@nuxt/scripts", "@nuxt/image", "@nuxtjs/robots"],
   css: ["~/assets/css/main.css"],
 
   vue: {
@@ -20,5 +20,9 @@ export default defineNuxtConfig({
       espWebTools:
         "https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module",
     },
+  },
+
+  image: {
+    dir: "assets/img",
   },
 });
