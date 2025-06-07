@@ -5,10 +5,15 @@ Firmware for a Wordclock based on the ESP8266, powered by the [Sming Framework](
 ## Setup
 
 The setup of this repo is based on devcontainers. To all that's required to use it is Docker and an IDE like VS Code to start and connect to the dev container.
+Once the dev container is up and running, make sure to run the following command to install and setup all dependencies for e.g. intellisense to work:
+
+```bash
+pnpm i && pnpm run --filter web build && make
+```
 
 ### Flashing
 
-There is currently an issue with forwarding devices to containers in Docker Desktop. So the easiest way of interacting with a device connected to the host maschine is the Telnet protocol (sounds stupid but that's the recommended way from Espressif: [Docs](https://docs.espressif.com/projects/esp-idf/en/v5.1/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port))
+There is currently an issue with forwarding devices to containers in Docker Desktop. So the easiest way of interacting with a device connected to the host machine is the Telnet protocol (sounds stupid but that's the recommended way from Espressif: [Docs](https://docs.espressif.com/projects/esp-idf/en/v5.1/esp32/api-guides/tools/idf-docker-image.html#using-remote-serial-port))
 
 First start the esptool server on your device (mounting point may vary):
 
@@ -24,11 +29,11 @@ make flash COM_PORT=rfc2217://host.docker.internal:4000?ign_set_control
 
 ### Building the file system image with the frontend
 
-The IFS (Inmemory File System) will automatically be built when running `make` for the first time.
+The IFS (In-memory File System) will automatically be built when running `make` for the first time.
 However, this is only the case if the image isn't cached already. Sming can't track changes to its underlying files so in order for changes to the frontend to be reflected in the firmware flashed to the device you need to run:
 
 ```bash
-make buildpart
+pnpm run --filter web build && make buildpart
 ```
 
 ### Release

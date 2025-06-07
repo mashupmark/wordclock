@@ -23,8 +23,6 @@
 	},
 	"appPort": 3000,
 	"forwardPorts": [3000],
-	// Run make initially to build all dependencies for intellisense to work
-	"postCreateCommand": "pnpm i && pnpm -r build && make",
 	"remoteUser": "root",
 	"customizations": {
 		"vscode": {
