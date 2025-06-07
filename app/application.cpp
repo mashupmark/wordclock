@@ -8,6 +8,7 @@
 #include <TimeKeeper.h>
 #include <Screen.h>
 #include <Wordclock.h>
+#include <improv.h>
 
 Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
 
@@ -202,8 +203,14 @@ Wordclock wordclock(11, 10, &config);
 
 void init()
 {
+	WifiStation.enable(true);
+	WifiAccessPoint.config("Wordclock", "", WifiAuthMode::AUTH_OPEN);
+	WifiEvents.onStationGotIP(onWifiConnect);
+	WifiEvents.onStationDisconnect(onWifiDisconnect);
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
+	Serial.onDataReceived(parseImprovCommand);
 
 	mountFileSystem();
 
@@ -218,9 +225,5 @@ void init()
 					   { return wordclock.getColor(x, y); });
 	screen.setRefreshRate(1);
 
-	WifiStation.enable(true);
-	WifiAccessPoint.config("Wordclock", "", WifiAuthMode::AUTH_OPEN);
-	WifiEvents.onStationGotIP(onWifiConnect);
-	WifiEvents.onStationDisconnect(onWifiDisconnect);
 	System.onReady(startWebServer);
 }
