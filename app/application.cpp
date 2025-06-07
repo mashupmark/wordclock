@@ -1,6 +1,7 @@
 #include <SmingCore.h>
 #include <LittleFS.h>
 #include <JsonObjectStream.h>
+#include <Network/Mdns/Responder.h>
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 #include <config.h>
 #include <ConfigDB/Json/Format.h>
@@ -111,6 +112,7 @@ void onFile(HttpRequest &request, HttpResponse &response)
 
 TimeKeeper timeKeeper("pool.ntp.org", 60 * 60); // Update time every hour
 HttpServer server;
+static mDNS::Responder mdnsResponder;
 
 void startWebServer()
 {
@@ -121,6 +123,8 @@ void startWebServer()
 	server.paths.set("/api/settings/wifi", onUpdateWifi);
 	server.paths.setDefault(onFile);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
+
+	mdnsResponder.begin(F("wordclock"));
 
 	Serial << endl
 		   << _F("=== WEB SERVER STARTED ===") << endl

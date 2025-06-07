@@ -45,6 +45,7 @@
                 "${SMING_HOME}/Libraries/ArduinoJson6/ArduinoJson/src",
                 "${SMING_HOME}/Libraries/ConfigDB/src/include",
                 "${SMING_HOME}/Libraries/Timezone/src/include",
+                "${SMING_HOME}/Libraries/MDNS/src/include",
                 "${workspaceFolder}/out/ConfigDB",
                 "${workspaceFolder}/include"
             ],
