@@ -1,5 +1,11 @@
 <script setup lang="ts">
-defineProps<{ manifest: string }>();
+const props = defineProps<{ manifest: string }>();
+
+const runtimeConfig = useRuntimeConfig();
+
+const manifest = computed(
+  () => `${runtimeConfig.app.baseURL}${props.manifest}`
+);
 </script>
 
 <template>

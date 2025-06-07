@@ -3,7 +3,7 @@
     <section class="grid place-content-center text-center h-screen">
       <h1 class="text-6xl pb-6">Setup your Wordclock</h1>
       <div class="flex justify-center gap-4">
-        <InstallButton manifest="/esp-manifest.json" />
+        <InstallButton manifest="esp-manifest.json" />
         <UButton
           class="rounded-full font-bold px-6 py-3"
           variant="outline"

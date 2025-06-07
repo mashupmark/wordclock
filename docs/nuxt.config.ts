@@ -15,6 +15,10 @@ export default defineNuxtConfig({
     },
   },
 
+  app: {
+    baseURL: "/wordclock/",
+  },
+
   scripts: {
     globals: {
       espWebTools:

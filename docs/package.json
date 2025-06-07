@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "nuxt dev",
-    "build": "NUXT_APP_BASE_URL=/wordclock/ nuxt generate --preset github_pages",
+    "build": "nuxt generate --preset github_pages",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
