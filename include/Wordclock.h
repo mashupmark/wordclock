@@ -124,7 +124,7 @@ bool Wordclock::maskTime(DateTime dt, uint8_t x, uint8_t y)
     if (y == 9 && x < 4 && hour == 10) // "Zehn"
         return true;
 
-    if (y == 9 && x >= 4 && x < 7) // "Elf"
+    if (y == 9 && x >= 4 && x < 7 && hour == 11) // "Elf"
         return true;
 
     if (y == 9 && x >= 8) // "Uhr"
