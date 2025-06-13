@@ -97,7 +97,7 @@ bool Wordclock::maskTime(DateTime dt, uint8_t x, uint8_t y)
     if (y == 4 && x >= 7 && hour == 5) // "Fünf"
         return true;
 
-    if (y == 5 && x < 4 && hour == 1) // "Eins"
+    if (y == 5 && hour == 1 && (x < 3 || (x == 3 && minute != 0))) // "Ein(s)"
         return true;
 
     if (y == 5 && x >= 7 && hour == 2) // "Zwei"
