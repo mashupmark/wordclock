@@ -97,7 +97,7 @@ bool Wordclock::maskTime(DateTime dt, uint8_t x, uint8_t y)
     if (y == 4 && x >= 7 && hour == 5) // "Fünf"
         return true;
 
-    if (y == 5 && x < 4 && hour == 1) // "Eins"
+    if (y == 5 && hour == 1 && (x < 3 || (x == 3 && minute != 0))) // "Ein(s)"
         return true;
 
     if (y == 5 && x >= 7 && hour == 2) // "Zwei"
@@ -118,7 +118,7 @@ bool Wordclock::maskTime(DateTime dt, uint8_t x, uint8_t y)
     if (y == 8 && x < 6 && hour == 7) // "Sieben"
         return true;
 
-    if (y == 8 && x >= 6 && hour == 12) // "Zwölf"
+    if (y == 8 && x >= 6 && hour == 0) // "Zwölf"
         return true;
 
     if (y == 9 && x < 4 && hour == 10) // "Zehn"
@@ -127,7 +127,7 @@ bool Wordclock::maskTime(DateTime dt, uint8_t x, uint8_t y)
     if (y == 9 && x >= 4 && x < 7 && hour == 11) // "Elf"
         return true;
 
-    if (y == 9 && x >= 8) // "Uhr"
+    if (y == 9 && x >= 8 && minute == 0) // "Uhr"
         return true;
 
     return false;
