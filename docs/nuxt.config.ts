@@ -17,6 +17,14 @@ export default defineNuxtConfig({
 
   app: {
     baseURL: "/wordclock/",
+    head: {
+      // Meta tags to prevent github from caching the page for ages
+      meta: [
+        { "http-equiv": "cache-control", content: "no-cache" },
+        { "http-equiv": "expires", content: "0" },
+        { "http-equiv": "pragma", content: "no-cache" },
+      ],
+    },
   },
 
   scripts: {
