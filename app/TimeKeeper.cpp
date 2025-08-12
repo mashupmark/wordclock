@@ -27,7 +27,7 @@ boolean TimeKeeper::setTimeZone(String zoneName)
         return false;
 
     timeZone = Timezone::fromPosix(zone->tzstr);
-    SystemClock.setTimeZone(timeZone.makeZoned(SystemClock.now()).getZoneInfo());
+    SystemClock.setTimeZone(timeZone.makeZoned(SystemClock.now(eTZ_UTC)).getZoneInfo());
 
     return true;
 }
