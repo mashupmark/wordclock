@@ -10,7 +10,8 @@
 #include <Wordclock.h>
 #include <improv.h>
 
-Config config("config"); // Path needs to match mount point defined in fsimage.fwfs
+Config config("config");								 // Path needs to match mount point defined in fsimage.fwfs
+TimeKeeper timeKeeper(&config, "pool.ntp.org", 60 * 60); // Update time every hour
 
 void onSettings(HttpRequest &request, HttpResponse &response)
 {
@@ -32,6 +33,8 @@ void onSettings(HttpRequest &request, HttpResponse &response)
 			response.code = HTTP_STATUS_BAD_REQUEST;
 			return;
 		}
+
+		timeKeeper.setTimeZone(generalSettings.getTimezone());
 	}
 
 	auto exportStream = generalSettings.createExportStream(ConfigDB::Json::format);
@@ -111,7 +114,6 @@ void onFile(HttpRequest &request, HttpResponse &response)
 	response.sendFile(file, false);
 }
 
-TimeKeeper timeKeeper("pool.ntp.org", 60 * 60); // Update time every hour
 HttpServer server;
 static mDNS::Responder mdnsResponder;
 
@@ -220,7 +222,6 @@ void init()
 	clockSettings.exportToFile(ConfigDB::Json::format, "config/clock.json");
 	generalSettings.exportToFile(ConfigDB::Json::format, "config/settings.json");
 
-	timeKeeper.setTimeZone(generalSettings.getTimezone());
 	screen.setRenderFn([](uint8_t x, uint8_t y, uint8_t t) -> uint32_t
 					   { return wordclock.getColor(x, y); });
 	screen.setRefreshRate(1);

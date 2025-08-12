@@ -1,16 +1,18 @@
 #include <Network/NtpClient.h>
 #include <Timezone.h>
+#include <config.h>
 
 class TimeKeeper
 {
 public:
-    TimeKeeper(String url, unsigned int requestInterval);
+    TimeKeeper(Config *config, String url, unsigned int requestInterval);
     ~TimeKeeper();
 
     boolean setTimeZone(String timeZone);
     void enableAutoQuery(boolean enabled);
 
 private:
+    Config *config;
     Timezone timeZone;
     NtpClient *client;
 
