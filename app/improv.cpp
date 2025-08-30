@@ -336,7 +336,7 @@ bool handleImprovCommand(improv::ImprovCommand cmd)
     {
         std::vector<std::string> deviceInfo = {
             "Wordclock", // Firmware name
-            "1.0.0",     // Firmware version
+            "1.0.1",     // Firmware version
             "ESP8266",   // Hardware chip / variant
             "Wordclock"  // Device name
         };
